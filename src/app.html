@@ -2,13 +2,11 @@
   <require from="aurelia-kendoui-bridge/grid/grid"></require>
   <require from="aurelia-kendoui-bridge/grid/col"></require>
   <require from="aurelia-kendoui-bridge/button/button"></require>
+  <require from="./title-i18n"></require>
   <require from="./grid-i18n"></require>
 
-  ${'name' | t}
-  <p i18n="name"></p>
-
-  <ak-grid k-data-source.bind="datasource" k-widget.bind="_grid">
-    <ak-col t="[kTitle]name" k-field="ProductName" grid-i18n="grid.bind: _grid"></ak-col>
+  <ak-grid k-data-source.bind="datasource" grid-i18n>
+    <ak-col k-field="ProductName" title-i18n="title: name"></ak-col>
   </ak-grid>
   
   <button ak-button click.delegate="changeLanguage()">Change language</button>
