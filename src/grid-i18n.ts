@@ -11,7 +11,8 @@ export class GridI18nCustomAttribute {
               private i18n: I18N) {}
 
   attached() {
-    this.subscription = this.ea.subscribe('i18n:locale:changed', () => { 
+    this.subscription = this.ea.subscribe('i18n:locale:changed', () => {
+      // delay so that i18n can update the column name
       setTimeout(() => this.refreshGrid(), 100);
     });
   }
@@ -19,20 +20,28 @@ export class GridI18nCustomAttribute {
   refreshGrid() {
     let gridVM = (<any>this.element).au.controller.viewModel;
     let grid = gridVM.kWidget;
-    let akCols = Array.prototype.slice.call(this.element.querySelectorAll('ak-col'));
-    let options = grid.getOptions();
 
-    for(let column of options.columns) {
-      for(let akCol of akCols) {
-        let columnVM = (<any>akCol).au.controller.viewModel;
-        if (column.field === columnVM.kField) {
-            column.title = columnVM.kTitle;
+    // get the options from the ak-grid wrapper
+    var wrapperOptions = gridVM.widgetBase._getOptions(gridVM.element);
+    gridVM._beforeInitialize(wrapperOptions);
+
+    // get the options from the grid instance
+    let gridOptions = grid.getOptions();
+
+    // update the column names on these options
+    for(let wrapperColumn of wrapperOptions.columns) {
+      for(let gridColumn of gridOptions.columns) {
+        if (gridColumn.field === wrapperColumn.field) {
+            gridColumn.title = wrapperColumn.title;
         }
       }
     }
    
-    setTimeout(() => {
-      grid.setOptions(options);
-    }, 200);
+    // set the updated options on the grid
+    grid.setOptions(gridOptions);
+  }
+
+  detached() {
+    this.subscription.dispose();
   }
 }

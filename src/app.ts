@@ -7,7 +7,7 @@ export class App {
   constructor(private i18n: I18N) {}
 
   changeLanguage() {
-    this.i18n.setLocale('de');
+    this.i18n.setLocale(this.i18n.getLocale() == 'de' ? 'en' : 'de');
   }
 
   datasource = {

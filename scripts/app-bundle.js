@@ -61,7 +61,7 @@ define('app',["require", "exports", 'aurelia-framework', 'aurelia-i18n'], functi
             };
         }
         App.prototype.changeLanguage = function () {
-            this.i18n.setLocale('de');
+            this.i18n.setLocale(this.i18n.getLocale() == 'de' ? 'en' : 'de');
         };
         App = __decorate([
             aurelia_framework_1.inject(aurelia_i18n_1.I18N), 
@@ -107,21 +107,22 @@ define('grid-i18n',["require", "exports", 'aurelia-framework', 'aurelia-event-ag
         GridI18nCustomAttribute.prototype.refreshGrid = function () {
             var gridVM = this.element.au.controller.viewModel;
             var grid = gridVM.kWidget;
-            var akCols = Array.prototype.slice.call(this.element.querySelectorAll('ak-col'));
-            var options = grid.getOptions();
-            for (var _i = 0, _a = options.columns; _i < _a.length; _i++) {
-                var column = _a[_i];
-                for (var _b = 0, akCols_1 = akCols; _b < akCols_1.length; _b++) {
-                    var akCol = akCols_1[_b];
-                    var columnVM = akCol.au.controller.viewModel;
-                    if (column.field === columnVM.kField) {
-                        column.title = columnVM.kTitle;
+            var wrapperOptions = gridVM.widgetBase._getOptions(gridVM.element);
+            gridVM._beforeInitialize(wrapperOptions);
+            var gridOptions = grid.getOptions();
+            for (var _i = 0, _a = wrapperOptions.columns; _i < _a.length; _i++) {
+                var wrapperColumn = _a[_i];
+                for (var _b = 0, _c = gridOptions.columns; _b < _c.length; _b++) {
+                    var gridColumn = _c[_b];
+                    if (gridColumn.field === wrapperColumn.field) {
+                        gridColumn.title = wrapperColumn.title;
                     }
                 }
             }
-            setTimeout(function () {
-                grid.setOptions(options);
-            }, 200);
+            grid.setOptions(gridOptions);
+        };
+        GridI18nCustomAttribute.prototype.detached = function () {
+            this.subscription.dispose();
         };
         GridI18nCustomAttribute = __decorate([
             aurelia_framework_1.inject(aurelia_event_aggregator_1.EventAggregator, Element, aurelia_i18n_1.I18N), 
@@ -3756,5 +3757,5 @@ define('title-i18n',["require", "exports", 'aurelia-framework', 'aurelia-event-a
     exports.TitleI18nCustomAttribute = TitleI18nCustomAttribute;
 });
 
-define('text!app.html', ['module'], function(module) { module.exports = "<template>\n  <require from=\"aurelia-kendoui-bridge/grid/grid\"></require>\n  <require from=\"aurelia-kendoui-bridge/grid/col\"></require>\n  <require from=\"aurelia-kendoui-bridge/button/button\"></require>\n  <require from=\"./title-i18n\"></require>\n  <require from=\"./grid-i18n\"></require>\n\n  <ak-grid k-data-source.bind=\"datasource\" grid-i18n>\n    <ak-col k-field=\"ProductName\" title-i18n=\"title: name\"></ak-col>\n  </ak-grid>\n  \n  <button ak-button click.delegate=\"changeLanguage()\">Change language</button>\n</template>"; });
+define('text!app.html', ['module'], function(module) { module.exports = "<template>\n  <require from=\"aurelia-kendoui-bridge/grid/grid\"></require>\n  <require from=\"aurelia-kendoui-bridge/grid/col\"></require>\n  <require from=\"aurelia-kendoui-bridge/button/button\"></require>\n  <require from=\"./grid-i18n\"></require>\n\n  <ak-grid k-data-source.bind=\"datasource\" grid-i18n>\n    <ak-col k-field=\"ProductName\" k-title=\"${'name' & t}\"></ak-col>\n  </ak-grid>\n  \n  <button ak-button click.delegate=\"changeLanguage()\">Toggle language</button>\n</template>"; });
 //# sourceMappingURL=app-bundle.js.map
