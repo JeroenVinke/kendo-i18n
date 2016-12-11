@@ -1,14 +1,12 @@
-import {inject, bindable} from 'aurelia-framework';
+import {inject} from 'aurelia-framework';
 import {EventAggregator, Subscription} from 'aurelia-event-aggregator';
-import {I18N} from 'aurelia-i18n';
 
-@inject(EventAggregator, Element, I18N)
+@inject(EventAggregator, Element)
 export class GridI18nCustomAttribute {
   subscription: Subscription;
 
   constructor(private ea: EventAggregator, 
-              private element: Element,
-              private i18n: I18N) {}
+              private element: Element) {}
 
   attached() {
     this.subscription = this.ea.subscribe('i18n:locale:changed', () => {
